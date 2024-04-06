@@ -17,12 +17,8 @@
     "strictNullChecks": true
   },
   "include": [
-    "src/**/*",
-    "contract/**/*",
-    "./knexfile.ts",
-    "migrations/**/*",
-    "spec/**/*",
-    "mockdata/**/*",
+    "app/**/*",
+    "data/**/*",
   ],
   "exclude": ["node_modules"]
 }
