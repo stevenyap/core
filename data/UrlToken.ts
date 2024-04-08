@@ -16,12 +16,14 @@ export type UrlTokens<T extends string> = T extends `${infer Url}?${infer _}`
   ? Token
   : never
 
-// type T = QueryTokens<"/?x=:x&y=:y&z=:z">
+// type T = QueryTokens<"/?x=:x&y=:y&z=:z&a[]=:a&a[]=:a">
 export type QueryTokens<T extends string> =
   T extends `${infer _}?${infer Query}`
     ? QueryTokens<Query>
     : T extends `${infer Token}=:${infer _}&${infer Rest}`
-    ? Token | QueryTokens<Rest>
+    ? RemoveBracket<Token> | QueryTokens<Rest>
     : T extends `${infer Token}=:${infer _}`
-    ? Token
+    ? RemoveBracket<Token>
     : never
+
+type RemoveBracket<T> = T extends `${infer Token}[]` ? Token : T

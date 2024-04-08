@@ -9,7 +9,7 @@
 - [ ] Iker: Use `zod` over `decoder` without infer
 - [x] Discuss: API Contract type to be simpler
 - [ ] Separate: Importing necessary core types such as `Either`
-- [ ] Separate: Allow `array` in `UrlToken`
+- [x] Separate: Allow `array` in `UrlToken`
 - [x] Add opaque type
 
 ### API
