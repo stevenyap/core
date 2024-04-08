@@ -7,9 +7,10 @@
 ### Core
 - [ ] Discuss: Use Deno?
 - [ ] Iker: Use `zod` over `decoder` without infer
-- [ ] Discuss: API Contract type to be simpler
+- [x] Discuss: API Contract type to be simpler
 - [ ] Separate: Importing necessary core types such as `Either`
 - [ ] Separate: Allow `array` in `UrlToken`
+- [x] Add opaque type
 
 ### API
 - [ ] Discuss: Use Deno?
@@ -26,4 +27,12 @@
 - [ ] Steven: JSX renderer instead of React?
  
 ### Non-Goals
-- [ ] Discuss: Immutable state => opaque types
+- [ ] Discuss: Immutable state 
+
+### Convention
+We need to document all our convention
+- [ ] Type Specification
+- [ ] FTFC
+- [ ] Prefer `function` over `const a = () => {}`
+- [ ] Always annotate types in function and variables
+- [ ] Immutable and Functional

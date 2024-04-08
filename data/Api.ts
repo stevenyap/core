@@ -1,80 +1,132 @@
 import * as JD from "decoders"
 import { Tokens } from "./UrlToken"
 
-export type PublicContract<
+// Base type to describe an API endpoint
+type Api<
   M extends Method,
-  R extends string,
-  U extends UrlRecord<R>,
-  B,
-  E,
-  T,
+  Route extends string,
+  UrlParams extends UrlRecord<Route>,
+  RequestBody,
+  Response,
 > = {
   method: M
-  route: R
-  urlDecoder: JD.Decoder<U>
-  bodyDecoder: JD.Decoder<B>
-  responseDecoder: (status: number) => JD.Decoder<ResponseJson<E, T>>
+  route: Route
+  urlDecoder: JD.Decoder<UrlParams>
+  bodyDecoder: JD.Decoder<RequestBody>
+  responseDecoder: (status: number) => JD.Decoder<Response>
 }
+
+// Public API types
+export type GetApi<
+  Route extends string,
+  UrlParams extends UrlRecord<Route>,
+  ErrorCode,
+  Payload,
+> = Api<"GET", Route, UrlParams, never, ResponseJson<ErrorCode, Payload>>
+
+export type DeleteApi<
+  Route extends string,
+  UrlParams extends UrlRecord<Route>,
+  ErrorCode,
+  Payload,
+> = Api<"DELETE", Route, UrlParams, never, ResponseJson<ErrorCode, Payload>>
+
+export type PostApi<
+  Route extends string,
+  UrlParams extends UrlRecord<Route>,
+  RequestBody,
+  ErrorCode,
+  Payload,
+> = Api<"POST", Route, UrlParams, RequestBody, ResponseJson<ErrorCode, Payload>>
+
+export type PutApi<
+  Route extends string,
+  UrlParams extends UrlRecord<Route>,
+  RequestBody,
+  ErrorCode,
+  Payload,
+> = Api<"PUT", Route, UrlParams, RequestBody, ResponseJson<ErrorCode, Payload>>
+
+export type PatchApi<
+  Route extends string,
+  UrlParams extends UrlRecord<Route>,
+  RequestBody,
+  ErrorCode,
+  Payload,
+> = Api<
+  "PATCH",
+  Route,
+  UrlParams,
+  RequestBody,
+  ResponseJson<ErrorCode, Payload>
+>
 
 // Auth APIs requires a request header "authorization: Bearer <JWT-Token>"
-export type AuthContract<
-  M extends Method,
-  R extends string,
-  U extends UrlRecord<R>,
-  B,
-  E,
-  T,
-> = {
-  method: M
-  route: R
-  urlDecoder: JD.Decoder<U>
-  bodyDecoder: JD.Decoder<B>
-  responseDecoder: (status: number) => JD.Decoder<AuthResponseJson<E, T>>
-}
+// and returns AuthResponseJson
+export type AuthGetApi<
+  Route extends string,
+  UrlParams extends UrlRecord<Route>,
+  ErrorCode,
+  Payload,
+> = Api<"GET", Route, UrlParams, never, AuthResponseJson<ErrorCode, Payload>>
 
-// Admin APIs requires a request header "authorization: Bearer <JWT-Token>"
-export type AdminContract<
-  M extends Method,
-  R extends string,
-  U extends UrlRecord<R>,
-  B,
-  E,
-  T,
-> = {
-  method: M
-  route: R
-  urlDecoder: JD.Decoder<U>
-  bodyDecoder: JD.Decoder<B>
-  responseDecoder: (status: number) => JD.Decoder<AuthResponseJson<E, T>>
-}
+export type AuthDeleteApi<
+  Route extends string,
+  UrlParams extends UrlRecord<Route>,
+  ErrorCode,
+  Payload,
+> = Api<"DELETE", Route, UrlParams, never, AuthResponseJson<ErrorCode, Payload>>
 
+export type AuthPostApi<
+  Route extends string,
+  UrlParams extends UrlRecord<Route>,
+  RequestBody,
+  ErrorCode,
+  Payload,
+> = Api<
+  "POST",
+  Route,
+  UrlParams,
+  RequestBody,
+  AuthResponseJson<ErrorCode, Payload>
+>
+
+export type AuthPutApi<
+  Route extends string,
+  UrlParams extends UrlRecord<Route>,
+  RequestBody,
+  ErrorCode,
+  Payload,
+> = Api<
+  "PUT",
+  Route,
+  UrlParams,
+  RequestBody,
+  AuthResponseJson<ErrorCode, Payload>
+>
+
+export type AuthPatchApi<
+  Route extends string,
+  UrlParams extends UrlRecord<Route>,
+  RequestBody,
+  ErrorCode,
+  Payload,
+> = Api<
+  "PATCH",
+  Route,
+  UrlParams,
+  RequestBody,
+  AuthResponseJson<ErrorCode, Payload>
+>
+
+// Stream APIs do not decode
 // Auth Stream APIs requires a request header "authorization: Bearer <JWT-Token>"
-export type AuthStreamContract<
-  M extends "POST" | "PUT",
-  R extends string,
-  U extends UrlRecord<R>,
-  E,
-  T,
-> = {
-  method: M
-  route: R
-  urlDecoder: JD.Decoder<U>
-  responseDecoder: (status: number) => JD.Decoder<AuthResponseJson<E, T>>
-}
-
-// Admin Stream APIs requires a request header "authorization: Bearer <JWT-Token>"
-export type AdminStreamContract<
-  M extends "POST" | "PUT",
-  R extends string,
-  U extends UrlRecord<R>,
-  E,
-  T,
-> = {
-  method: M
-  route: R
-  urlDecoder: JD.Decoder<U>
-  responseDecoder: (status: number) => JD.Decoder<AdminResponseJson<E, T>>
-}
+export type AuthStreamApi<
+  Route extends string,
+  UrlParams extends UrlRecord<Route>,
+  ErrorCode,
+  Payload,
+> = Api<"GET", Route, UrlParams, never, AuthResponseJson<ErrorCode, Payload>>
 
 export type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH"
 export type UrlRecord<R extends string> = Record<Tokens<R>, string | number>
@@ -86,7 +138,7 @@ export type ResponseJson<E, D> = Ok200<D> | Err400<E> | InternalErr500
 
 export type AuthErr400<E> = {
   _t: "Err"
-  code: E | "UNAUTHORISED" | "UNAUTHORISED_LOCATION"
+  code: E | "UNAUTHORISED"
 }
 export type AuthResponseJson<E, D> = Ok200<D> | AuthErr400<E> | InternalErr500
 
@@ -129,24 +181,6 @@ export function authResponseDecoder<E, T>(
   }
 }
 
-export function adminResponseDecoder<E, T>(
-  errorDecoder: JD.Decoder<E>,
-  dataDecoder: JD.Decoder<T>,
-) {
-  return function (status: number): JD.Decoder<AdminResponseJson<E, T>> {
-    switch (status) {
-      case 200:
-        return ok200Decoder(dataDecoder)
-      case 400:
-        return adminErr400Decoder(errorDecoder)
-      case 500:
-        return internalErr500Decoder()
-      default:
-        throw new Error("Invalid status number: `${status}`")
-    }
-  }
-}
-
 export function ok200Decoder<D>(
   dataDecoder: JD.Decoder<D>,
 ): JD.Decoder<Ok200<D>> {
@@ -173,11 +207,7 @@ export function authErr400Decoder<E>(
     code: JD.unknown, // Issue here https://github.com/nvie/decoders/issues/930
   }).transform(({ _t, code }) => ({
     _t,
-    code: JD.either(
-      JD.constant("UNAUTHORISED"),
-      JD.constant("UNAUTHORISED_LOCATION"),
-      errorDecoder,
-    ).verify(code),
+    code: JD.either(JD.constant("UNAUTHORISED"), errorDecoder).verify(code),
   }))
 }
 
@@ -205,5 +235,5 @@ export function internalErr500Decoder(): JD.Decoder<InternalErr500> {
 export type NoUrlParams = Record<string, never>
 export type NoBodyParams = Record<string, never>
 
-export const noUrlParamsDecoder = JD.object({})
-export const noBodyParamsDecoder = JD.object({})
+export const noUrlParamsDecoder = JD.never("_")
+export const noBodyParamsDecoder = JD.never("_")

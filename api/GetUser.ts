@@ -1,17 +1,14 @@
 import * as JD from "decoders"
 import { User, userDecoder } from "../app/User"
 import {
-  NoBodyParams,
   noBodyParamsDecoder,
   authResponseDecoder,
-  AuthContract,
+  AuthGetApi,
 } from "../data/Api"
 
-export type GetUser = AuthContract<
-  "GET",
+export type GetUser = AuthGetApi<
   "/users/:userID",
   UrlParams,
-  NoBodyParams,
   ErrorCode,
   Payload
 >
@@ -19,20 +16,20 @@ export type GetUser = AuthContract<
 export type UrlParams = {
   userID: number
 }
-const urlDecoder: JD.Decoder<UrlParams> = JD.object({
-  userID: JD.number,
-})
 
 export type Payload = User
-export const payloadDecoder: JD.Decoder<Payload> = userDecoder
 
 export type ErrorCode = "USER_NOT_FOUND"
-export const errorDecoder: JD.Decoder<ErrorCode> = JD.oneOf(["USER_NOT_FOUND"])
 
 export const contract: GetUser = {
   method: "GET",
   route: "/users/:userID",
-  urlDecoder,
+  urlDecoder: JD.object({
+    userID: JD.number,
+  }),
   bodyDecoder: noBodyParamsDecoder,
-  responseDecoder: authResponseDecoder(errorDecoder, payloadDecoder),
+  responseDecoder: authResponseDecoder(
+    JD.oneOf(["USER_NOT_FOUND"]),
+    userDecoder,
+  ),
 }
