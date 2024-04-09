@@ -1,5 +1,5 @@
 import * as JD from "decoders"
-import { Tokens } from "./UrlToken"
+import { UrlRecord } from "./UrlRecord"
 
 // Base type to describe an API endpoint
 type Api<
@@ -129,10 +129,6 @@ export type AuthStreamApi<
 > = Api<"GET", Route, UrlParams, never, AuthResponseJson<ErrorCode, Payload>>
 
 export type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH"
-export type UrlRecord<R extends string> = Record<
-  Tokens<R>,
-  string | number | Array<string> | Array<number>
->
 
 export type Ok200<D> = { _t: "Ok"; data: D }
 export type Err400<E> = { _t: "Err"; code: E }

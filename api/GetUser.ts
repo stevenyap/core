@@ -7,7 +7,7 @@ import {
 } from "../data/Api"
 
 export type GetUser = AuthGetApi<
-  "/users/:userID",
+  "/users/{userID=:number}",
   UrlParams,
   ErrorCode,
   Payload
@@ -23,7 +23,7 @@ export type ErrorCode = "USER_NOT_FOUND"
 
 export const contract: GetUser = {
   method: "GET",
-  route: "/users/:userID",
+  route: "/users/{userID=:number}",
   urlDecoder: JD.object({
     userID: JD.number,
   }),
