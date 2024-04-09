@@ -5,29 +5,29 @@
 - [ ] User can login
 
 ### Core
-- [ ] Discuss: Use Deno?
 - [ ] Iker: Use `zod` over `decoder` without infer
-- [x] Discuss: API Contract type to be simpler
-- [ ] Separate: Importing necessary core types such as `Either`
+- [x] API Contract type to be simpler
 - [x] Separate: Allow `array` in `UrlToken`
 - [x] Add opaque type
 
 ### API
-- [ ] Discuss: Use Deno?
-- [ ] Steven: A better `knex`
-- [ ] Task: Local docker setup with database
-- [ ] Task: Seeding
-- [ ] Task: Test cases
-- [ ] Task: No runway promises in lint
+- [ ] Steven: Use https://kysely.dev/docs/getting-started over `knex`
+- [ ] Local docker setup with database
+- [ ] Seeding
+- [ ] Test cases
+- [ ] No runway promises in lint
 
 ### Web
 - [ ] Steven: Setup Vite over Parcel
-- [ ] Discuss: A better routing + `UrlToken`
-- [ ] Discuss: No runway promises in lint
-- [ ] Steven: JSX renderer instead of React?
+- [ ] A better routing + `UrlToken`
+- [ ] No runway promises in lint
  
 ### Non-Goals
-- [ ] Discuss: Immutable state 
+- [ ] Immutable state 
+- [x] Not doing maintenance mode and updating of web JS bundle
+- [x] Not adding stream API types
+- [x] Not replacing React with pureact/snabbdom or https://github.com/typescript-tea/core
+- [x] Not doing Deno
 
 ### Convention
 We need to document all our convention
