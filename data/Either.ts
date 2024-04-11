@@ -23,7 +23,7 @@ export function partition<E, T>(
   return results.reduce(
     (accum: { lefts: E[]; rights: T[] }, value) => {
       const { lefts, rights } = accum
-      if (isLeft(value)) {
+      if (value._t === "Left") {
         return { lefts: [...lefts, value.error], rights }
       } else {
         return { lefts, rights: [...rights, value.value] }
@@ -33,22 +33,12 @@ export function partition<E, T>(
   )
 }
 
-/** WARN: Coercion! Check if an Either is a Right */
-export function isRight<E, T>(result: Either<E, T>): result is Right<T> {
-  return result._t == "Right"
-}
-
-/** WARN: Coercion! Check if an Either is a Left */
-export function isLeft<E, T>(result: Either<E, T>): result is Left<E> {
-  return result._t == "Left"
-}
-
 export function fromRight<E, T>(result: Either<E, T>): T | null {
-  return isRight(result) ? result.value : null
+  return result._t === "Right" ? result.value : null
 }
 
 export function fromLeft<E, T>(result: Either<E, T>): E | null {
-  return isLeft(result) ? result.error : null
+  return result._t === "Left" ? result.error : null
 }
 
 export function fromDecodeResult<T>(
