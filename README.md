@@ -14,11 +14,13 @@
 - [ ] Steven: Use https://kysely.dev/docs/getting-started over `knex`
 - [ ] Local docker setup with database
 - [ ] Seeding
-- [ ] Test cases
+- [ ] Test cases with parallel testing
 - [ ] No runway promises in lint
 
 ### Web
 - [ ] Steven: Setup Vite over Parcel
+- [ ] Cmd as a type by itself to resolve State-State.App
+- [ ] Emit everywhere?
 - [ ] A better routing + `UrlToken`
 - [ ] No runway promises in lint
  
