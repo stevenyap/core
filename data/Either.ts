@@ -1,18 +1,30 @@
 import * as JD from "decoders"
 import type { DecodeResult } from "decoders"
+import { Maybe, just, nothing } from "./Maybe"
 
 export type Either<E, T> = Left<E> | Right<T>
-export type Left<E> = { _t: "Left"; error: E }
-export type Right<T> = { _t: "Right"; value: T }
+export type Left<E> = { readonly _t: "Left"; readonly error: E }
+export type Right<T> = { readonly _t: "Right"; readonly value: T }
 
 /** Returns a Right value */
-export function right<T>(value: T): Either<never, T> {
+export function right<T>(value: T): Right<T> {
   return { _t: "Right", value }
 }
 
 /** Returns a Left value */
-export function left<E>(error: E): Either<E, never> {
+export function left<E>(error: E): Left<E> {
   return { _t: "Left", error }
+}
+
+export function mapEither<E, A, B>(
+  either: Either<E, A>,
+  fn: (a: A) => B,
+): Either<E, B> {
+  if (either._t === "Left") {
+    return either
+  } else {
+    return right(fn(either.value))
+  }
 }
 
 /** Groups a Either[] into lefts and rights */
@@ -32,12 +44,12 @@ export function partition<E, T>(
   )
 }
 
-export function fromRight<E, T>(result: Either<E, T>): T | null {
-  return result._t === "Right" ? result.value : null
+export function fromRight<E, T>(result: Either<E, T>): Maybe<T> {
+  return result._t === "Right" ? just(result.value) : nothing()
 }
 
-export function fromLeft<E, T>(result: Either<E, T>): E | null {
-  return result._t === "Left" ? result.error : null
+export function fromLeft<E, T>(result: Either<E, T>): Maybe<E> {
+  return result._t === "Left" ? just(result.error) : nothing()
 }
 
 /** Annotation type is not exported from decoders package
