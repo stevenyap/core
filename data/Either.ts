@@ -6,12 +6,12 @@ export type Left<E> = { _t: "Left"; error: E }
 export type Right<T> = { _t: "Right"; value: T }
 
 /** Returns a Right value */
-export function right<E, T>(value: T): Either<E, T> {
+export function right<T>(value: T): Either<never, T> {
   return { _t: "Right", value }
 }
 
 /** Returns a Left value */
-export function left<E, T>(error: E): Either<E, T> {
+export function left<E>(error: E): Either<E, never> {
   return { _t: "Left", error }
 }
 
