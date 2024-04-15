@@ -11,7 +11,7 @@
   "author": "Haniker",
   "license": "ISC",
   "dependencies": {
-    "decoders": "2.0.4"
+    "decoders": "^2.4.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.6.0",
