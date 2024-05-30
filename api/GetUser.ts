@@ -5,6 +5,8 @@ import {
   authResponseDecoder,
   AuthGetApi,
 } from "../data/Api"
+import { numberFromStringDecoder } from "../data/Decoder"
+import { PositiveInt, positiveIntDecoder } from "../data/PositiveInt"
 
 export type GetUser = AuthGetApi<
   "/users/:userID",
@@ -14,7 +16,7 @@ export type GetUser = AuthGetApi<
 >
 
 export type UrlParams = {
-  userID: number
+  userID: PositiveInt
 }
 
 export type Payload = User
@@ -25,7 +27,7 @@ export const contract: GetUser = {
   method: "GET",
   route: "/users/:userID",
   urlDecoder: JD.object({
-    userID: JD.number,
+    userID: numberFromStringDecoder.transform(positiveIntDecoder.verify),
   }),
   bodyDecoder: noBodyParamsDecoder,
   responseDecoder: authResponseDecoder(

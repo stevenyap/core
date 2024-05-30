@@ -5,10 +5,11 @@
 - [ ] User can login
 
 ### Core
-- [ ] Iker: Use `zod` over `decoder` without infer
+- [x] No Zod, use decoders
 - [x] API Contract type to be simpler
 - [x] Separate: Allow `array` in `UrlToken`
 - [x] Add opaque type
+- [ ] Review UrlRecord using unknown?
 
 ### API
 - [ ] Steven: Use https://kysely.dev/docs/getting-started over `knex`
@@ -16,6 +17,7 @@
 - [ ] Seeding
 - [ ] Test cases with parallel testing
 - [ ] No runway promises in lint
+- [ ] Kysely
 
 ### Web
 - [ ] Steven: Setup Vite over Parcel
@@ -23,6 +25,9 @@
 - [ ] Emit everywhere?
 - [ ] A better routing + `UrlToken`
 - [ ] No runway promises in lint
+- [ ] Data store
+- [ ] Action Updater
+- [ ] Immutable state
  
 ### Non-Goals
 - [ ] Immutable state 

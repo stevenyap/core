@@ -6,6 +6,8 @@ import {
   NoUrlParams,
   noUrlParamsDecoder,
 } from "../data/Api"
+import { Text100, text100Decoder } from "../data/Text/Text100"
+import { Email, emailDecoder } from "../data/user/Email"
 
 export type PostUser = AuthPostApi<
   "/users",
@@ -16,24 +18,24 @@ export type PostUser = AuthPostApi<
 >
 
 export type BodyParams = {
-  name: string
-  email: string
+  name: Text100
+  email: Email
 }
 
 export type Payload = User
 
-export type ErrorCode = "EMPTY_NAME" | "EMPTY_EMAIL" | "UNKNOWN_DB_ERROR"
+export type ErrorCode = "UNKNOWN_DB_ERROR"
 
 export const contract: PostUser = {
   method: "POST",
   route: "/users",
   urlDecoder: noUrlParamsDecoder,
   bodyDecoder: JD.object({
-    name: JD.string,
-    email: JD.string,
+    name: text100Decoder,
+    email: emailDecoder,
   }),
   responseDecoder: authResponseDecoder(
-    JD.oneOf(["EMPTY_NAME", "EMPTY_EMAIL", "UNKNOWN_DB_ERROR"]),
+    JD.oneOf(["UNKNOWN_DB_ERROR"]),
     userDecoder,
   ),
 }
