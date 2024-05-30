@@ -1,11 +1,11 @@
 import * as JD from "decoders"
-import { Opaque, createOpaque } from "../Opaque"
+import { Opaque } from "../Opaque"
 import { Either, left, right, fromRight, mapEither } from "../Either"
 import { Maybe, throwIfNothing } from "../Maybe"
 
 const key: unique symbol = Symbol()
 const textLength = 100
-export type Text100 = Opaque<string>
+export type Text100 = Opaque<string, typeof key>
 
 export function createText100(value: string): Maybe<Text100> {
   return fromRight(createText100E(value))
@@ -13,14 +13,15 @@ export function createText100(value: string): Maybe<Text100> {
 
 export function createText100E(value: string): Either<Error, Text100> {
   const validated = cleanText100(value)
-  return mapEither(validated, (text) =>
-    createOpaque({
-      key,
-      value: text,
-      unwrap: () => text,
-      toJSON: () => text,
-    }),
-  )
+  return mapEither(validated, (text) => ({
+    [key]: text,
+    unwrap: function () {
+      return this[key]
+    },
+    toJSON: function () {
+      return this[key]
+    },
+  }))
 }
 
 export type Error = "TEXT_TOO_LONG"

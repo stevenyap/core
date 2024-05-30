@@ -1,10 +1,10 @@
 import * as JD from "decoders"
-import { Opaque, createOpaque } from "../Opaque"
+import { Opaque } from "../Opaque"
 import { Either, left, right, fromRight, mapEither } from "../Either"
 import { Maybe, throwIfNothing } from "../Maybe"
 
 const key: unique symbol = Symbol()
-export type Email = Opaque<string>
+export type Email = Opaque<string, typeof key>
 
 export function createEmail(value: string): Maybe<Email> {
   return fromRight(createEmailE(value))
@@ -12,14 +12,15 @@ export function createEmail(value: string): Maybe<Email> {
 
 export function createEmailE(value: string): Either<Error, Email> {
   const validated = cleanEmail(value)
-  return mapEither(validated, (email) =>
-    createOpaque({
-      key,
-      value: email,
-      unwrap: () => email,
-      toJSON: () => email,
-    }),
-  )
+  return mapEither(validated, (email) => ({
+    [key]: email,
+    unwrap: function () {
+      return this[key]
+    },
+    toJSON: function () {
+      return this[key]
+    },
+  }))
 }
 
 export type Error = "INVALID_EMAIL"

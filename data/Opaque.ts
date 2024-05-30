@@ -1,54 +1,79 @@
 import { JSONValue } from "decoders"
 
-/** An opaque type is a type where consumers cannot create or edit it
+/** An opaque type is a type where coders cannot create or edit it
  * thereby guaranteeing the integrity of the value
  * Use it after validation, sanitisation or to hide inner value
+ *
+ * Coder must pass in a unique symbol for K in order to work
+ * else if T is the same between two opaque types,
+ * the two opaque types are considered equal in TS
+ * Eg. Text256 == Email (if T is the same)
+ *
+ * Code Example:
+ * const key: unique symbol = Symbol()
+ * type Email = Opaque<string, typeof key>
+ * export function createEmailE(value: string): Either<Error, Email> {
+ *   const validated = cleanEmail(value)
+ *   return mapEither(validated, (email) => ({
+ *     [key]: email,
+ *     unwrap: () => email,
+ *     toJSON: () => email,
+ *   }))
+ * }
+ *
  **/
-export type Opaque<T, K = T> = {
-  [K in symbol]: T
+export type Opaque<T, K extends symbol, Unwrapped = T> = {
+  [key in K]: T
 } & {
-  readonly unwrap: () => K
+  readonly unwrap: () => Unwrapped
   readonly toJSON: () => JSONValue
 }
 
-export type Create<T> = {
-  key: symbol
-  value: T
-  unwrap: () => T
-  toJSON: () => JSONValue
-}
-export function createOpaque<T>(params: Create<T>): Opaque<T> {
-  const { key, value, unwrap, toJSON } = params
-  return {
-    [key]: value,
-    unwrap,
-    toJSON,
-  }
-}
-
 // Equality Functions
-export function eq<T>(a: Opaque<T>, b: Opaque<T>): boolean {
+// Because it depends on `unwrap()`,
+// Unwrapped type must be the same as T
+export function eq<T, K extends symbol>(
+  a: Opaque<T, K, T>,
+  b: Opaque<T, K, T>,
+): boolean {
   return a.unwrap() === b.unwrap()
 }
 
-export function gt<T>(a: Opaque<T>, b: Opaque<T>): boolean {
+export function gt<T, K extends symbol>(
+  a: Opaque<T, K, T>,
+  b: Opaque<T, K, T>,
+): boolean {
   return a.unwrap() > b.unwrap()
 }
 
-export function gte<T>(a: Opaque<T>, b: Opaque<T>): boolean {
+export function gte<T, K extends symbol>(
+  a: Opaque<T, K, T>,
+  b: Opaque<T, K, T>,
+): boolean {
   return a.unwrap() >= b.unwrap()
 }
 
-export function lt<T>(a: Opaque<T>, b: Opaque<T>): boolean {
+export function lt<T, K extends symbol>(
+  a: Opaque<T, K, T>,
+  b: Opaque<T, K, T>,
+): boolean {
   return a.unwrap() < b.unwrap()
 }
 
-export function lte<T>(a: Opaque<T>, b: Opaque<T>): boolean {
+export function lte<T, K extends symbol>(
+  a: Opaque<T, K, T>,
+  b: Opaque<T, K, T>,
+): boolean {
   return a.unwrap() <= b.unwrap()
 }
 
 // Array Functions
-export function find<T>(s: T, xs: Array<Opaque<T>>): Opaque<T> | null {
+// Because it depends on `unwrap()`,
+// Unwrapped type must be the same as T
+export function find<T, K extends symbol>(
+  s: T,
+  xs: Array<Opaque<T, K, T>>,
+): Opaque<T, K, T> | null {
   const [first, ...rest] = xs
   if (first == null) {
     return null
