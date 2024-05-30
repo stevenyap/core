@@ -10,14 +10,16 @@
 - [x] Separate: Allow `array` in `UrlToken`
 - [x] Add opaque type
 - [ ] Review UrlRecord using unknown?
+- [ ] AuthPostApi with BodyParams + noBodyParamsDecoder no TS error! This may make mistake from developer same for urlDecoder
 
 ### API
-- [ ] Steven: Use https://kysely.dev/docs/getting-started over `knex`
-- [ ] Local docker setup with database
-- [ ] Seeding
+- [x] Local docker setup with database
+- [x] Seeding
+- [x] Kysely
 - [ ] Test cases with parallel testing
 - [ ] No runway promises in lint
-- [ ] Kysely
+- [ ] Decoder not export Annotation anymore, so our Annotation become unknown now for decoderErrorMessage function
+- [ ] src/data/handler.ts publicApi contract GET should not have BodyParams but it still have because of type Api
 
 ### Web
 - [ ] Steven: Setup Vite over Parcel

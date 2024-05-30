@@ -2,7 +2,11 @@ const noAs = {
   create(context) {
     return {
       TSAsExpression(node) {
-        const variableName = node.parent.id.name
+        const variableName =
+          node.parent && node.parent.id
+            ? node.parent.id.name
+            : node.expression.type
+
         const typeName =
           node.typeAnnotation.typeName != null &&
           node.typeAnnotation.typeName.name != null
