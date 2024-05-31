@@ -7,10 +7,6 @@ import {
 } from "../data/Api"
 import { numberFromStringDecoder } from "../data/Decoder"
 import { PositiveInt, positiveIntDecoder } from "../data/PositiveInt"
-import {
-  NoneNegativeInt,
-  noneNegativeIntDecoder,
-} from "../data/NoneNegativeInt"
 
 export type GetUsers = AuthGetApi<
   "/users/?limit=:limit&lastID=:lastID",
@@ -20,7 +16,7 @@ export type GetUsers = AuthGetApi<
 >
 
 export type UrlParams = {
-  lastID: NoneNegativeInt
+  lastID: PositiveInt | null
   limit: PositiveInt
 }
 
@@ -32,7 +28,13 @@ export const contract: GetUsers = {
   method: "GET",
   route: "/users/?limit=:limit&lastID=:lastID",
   urlDecoder: JD.object({
-    lastID: numberFromStringDecoder.transform(noneNegativeIntDecoder.verify),
+    lastID: JD.string.transform((v) =>
+      v === ""
+        ? null
+        : numberFromStringDecoder
+            .transform(positiveIntDecoder.verify)
+            .verify(v),
+    ),
     limit: numberFromStringDecoder.transform(positiveIntDecoder.verify),
   }),
   bodyDecoder: noBodyParamsDecoder,
