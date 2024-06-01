@@ -17,6 +17,19 @@ type Api<
 }
 
 // Public API types
+export type PublicApi<
+  Route extends string,
+  UrlParams extends UrlRecord<Route>,
+  RequestBody,
+  ErrorCode,
+  Payload,
+> =
+  | GetApi<Route, UrlParams, ErrorCode, Payload>
+  | DeleteApi<Route, UrlParams, ErrorCode, Payload>
+  | PostApi<Route, UrlParams, RequestBody, ErrorCode, Payload>
+  | PatchApi<Route, UrlParams, RequestBody, ErrorCode, Payload>
+  | PutApi<Route, UrlParams, RequestBody, ErrorCode, Payload>
+
 export type GetApi<
   Route extends string,
   UrlParams extends UrlRecord<Route>,
@@ -63,6 +76,19 @@ export type PatchApi<
 
 // Auth APIs requires a request header "authorization: Bearer <JWT-Token>"
 // and returns AuthResponseJson
+export type AuthApi<
+  Route extends string,
+  UrlParams extends UrlRecord<Route>,
+  RequestBody,
+  ErrorCode,
+  Payload,
+> =
+  | AuthGetApi<Route, UrlParams, ErrorCode, Payload>
+  | AuthDeleteApi<Route, UrlParams, ErrorCode, Payload>
+  | AuthPostApi<Route, UrlParams, RequestBody, ErrorCode, Payload>
+  | AuthPatchApi<Route, UrlParams, RequestBody, ErrorCode, Payload>
+  | AuthPutApi<Route, UrlParams, RequestBody, ErrorCode, Payload>
+
 export type AuthGetApi<
   Route extends string,
   UrlParams extends UrlRecord<Route>,

@@ -16,20 +16,21 @@
 - [x] Local docker setup with database
 - [x] Seeding
 - [x] Kysely
-- [ ] Test cases with parallel testing
+- [ ] Refresh token
 - [ ] No runway promises in lint
+- [ ] Test cases with parallel testing
 - [ ] Decoder not export Annotation anymore, so our Annotation become unknown now for decoderErrorMessage function
 - [ ] src/data/handler.ts publicApi contract GET should not have BodyParams but it still have because of type Api
 
 ### Web
-- [ ] Steven: Setup Vite over Parcel
-- [ ] Cmd as a type by itself to resolve State-State.App
-- [ ] Emit everywhere?
-- [ ] A better routing + `UrlToken`
+- [x] Setup Vite over Parcel
+- [x] Action Updater
+- [x] Cmd as a type by itself to resolve State-State.App => Move to Action.ts
+- [x] Emit everywhere? Emit cannot be execute in Action which is the most place that developer try to do it wrongly
+- [x] A better routing + `UrlToken` => Not a better, just a `simpler` version
 - [ ] No runway promises in lint
 - [ ] Data store
-- [ ] Action Updater
-- [ ] Immutable state
+- [ ] Refresh token
  
 ### Non-Goals
 - [ ] Immutable state 
