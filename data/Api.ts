@@ -155,6 +155,8 @@ export type AuthStreamApi<
 > = Api<"GET", Route, UrlParams, never, AuthResponseJson<ErrorCode, Payload>>
 
 export type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH"
+// Url only provides string-based values (even for number)
+// hence, we treat it as unknown so that we can decode it into other types
 export type UrlRecord<R extends string> = Record<Tokens<R>, unknown>
 
 export type Ok200<D> = { _t: "Ok"; data: D }
@@ -261,5 +263,5 @@ export function internalErr500Decoder(): JD.Decoder<InternalErr500> {
 export type NoUrlParams = Record<string, never>
 export type NoBodyParams = Record<string, never>
 
-export const noUrlParamsDecoder = JD.never("_")
-export const noBodyParamsDecoder = JD.never("_")
+export const noUrlParamsDecoder: JD.Decoder<NoUrlParams> = JD.always({})
+export const noBodyParamsDecoder: JD.Decoder<NoBodyParams> = JD.always({})

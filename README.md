@@ -1,25 +1,24 @@
 # README
 
 ## TODO
-- [ ] CRUD user
 - [ ] User can login
+- [ ] CRUD user
 
 ### Core
 - [x] No Zod, use decoders
 - [x] API Contract type to be simpler
 - [x] Separate: Allow `array` in `UrlToken`
 - [x] Add opaque type
-- [ ] Review UrlRecord using unknown?
 - [ ] AuthPostApi with BodyParams + noBodyParamsDecoder no TS error! This may make mistake from developer same for urlDecoder
 
 ### API
 - [x] Local docker setup with database
 - [x] Seeding
 - [x] Kysely
-- [ ] Refresh token
-- [ ] No runway promises in lint
+- [ ] Refresh token - Access Token and Refresh Token
+- [ ] * No runway promises in lint
 - [ ] Test cases with parallel testing
-- [ ] Decoder not export Annotation anymore, so our Annotation become unknown now for decoderErrorMessage function
+- [X] Coaxed out Annotation from decoders
 - [ ] src/data/handler.ts publicApi contract GET should not have BodyParams but it still have because of type Api
 
 ### Web
@@ -30,7 +29,7 @@
 - [x] A better routing + `UrlToken` => Not a better, just a `simpler` version
 - [ ] No runway promises in lint
 - [ ] Data store
-- [ ] Refresh token
+- [ ] Refresh token - Inject into API layer to hold request while refreshing
  
 ### Non-Goals
 - [ ] Immutable state 
