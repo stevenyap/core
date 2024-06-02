@@ -1,10 +1,6 @@
 import * as JD from "decoders"
 import { User, userDecoder } from "../app/User"
-import {
-  noBodyParamsDecoder,
-  authResponseDecoder,
-  AuthGetApi,
-} from "../data/Api"
+import { authResponseDecoder, AuthGetApi } from "../data/Api"
 import { numberFromStringDecoder } from "../data/Decoder"
 import { PositiveInt, positiveIntDecoder } from "../data/PositiveInt"
 
@@ -37,6 +33,5 @@ export const contract: GetUsers = {
     ),
     limit: numberFromStringDecoder.transform(positiveIntDecoder.verify),
   }),
-  bodyDecoder: noBodyParamsDecoder,
   responseDecoder: authResponseDecoder(JD.null_, JD.array(userDecoder)),
 }

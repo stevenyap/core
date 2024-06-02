@@ -9,7 +9,6 @@
 - [x] API Contract type to be simpler
 - [x] Separate: Allow `array` in `UrlToken`
 - [x] Add opaque type
-- [ ] AuthPostApi with BodyParams + noBodyParamsDecoder no TS error! This may make mistake from developer same for urlDecoder
 
 ### API
 - [x] Local docker setup with database

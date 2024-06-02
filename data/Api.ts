@@ -16,7 +16,28 @@ type Api<
   responseDecoder: (status: number) => JD.Decoder<Response>
 }
 
+type NoneBodyApi<
+  M extends Method,
+  Route extends string,
+  UrlParams extends UrlRecord<Route>,
+  Response,
+> = {
+  method: M
+  route: Route
+  urlDecoder: JD.Decoder<UrlParams>
+  responseDecoder: (status: number) => JD.Decoder<Response>
+}
+
 // Public API types
+export type PublicNoneBodyApi<
+  Route extends string,
+  UrlParams extends UrlRecord<Route>,
+  ErrorCode,
+  Payload,
+> =
+  | GetApi<Route, UrlParams, ErrorCode, Payload>
+  | DeleteApi<Route, UrlParams, ErrorCode, Payload>
+
 export type PublicApi<
   Route extends string,
   UrlParams extends UrlRecord<Route>,
@@ -24,8 +45,6 @@ export type PublicApi<
   ErrorCode,
   Payload,
 > =
-  | GetApi<Route, UrlParams, ErrorCode, Payload>
-  | DeleteApi<Route, UrlParams, ErrorCode, Payload>
   | PostApi<Route, UrlParams, RequestBody, ErrorCode, Payload>
   | PatchApi<Route, UrlParams, RequestBody, ErrorCode, Payload>
   | PutApi<Route, UrlParams, RequestBody, ErrorCode, Payload>
@@ -35,14 +54,14 @@ export type GetApi<
   UrlParams extends UrlRecord<Route>,
   ErrorCode,
   Payload,
-> = Api<"GET", Route, UrlParams, never, ResponseJson<ErrorCode, Payload>>
+> = NoneBodyApi<"GET", Route, UrlParams, ResponseJson<ErrorCode, Payload>>
 
 export type DeleteApi<
   Route extends string,
   UrlParams extends UrlRecord<Route>,
   ErrorCode,
   Payload,
-> = Api<"DELETE", Route, UrlParams, never, ResponseJson<ErrorCode, Payload>>
+> = NoneBodyApi<"DELETE", Route, UrlParams, ResponseJson<ErrorCode, Payload>>
 
 export type PostApi<
   Route extends string,
@@ -76,6 +95,15 @@ export type PatchApi<
 
 // Auth APIs requires a request header "authorization: Bearer <JWT-Token>"
 // and returns AuthResponseJson
+export type AuthNoneBodyApi<
+  Route extends string,
+  UrlParams extends UrlRecord<Route>,
+  ErrorCode,
+  Payload,
+> =
+  | AuthGetApi<Route, UrlParams, ErrorCode, Payload>
+  | AuthDeleteApi<Route, UrlParams, ErrorCode, Payload>
+
 export type AuthApi<
   Route extends string,
   UrlParams extends UrlRecord<Route>,
@@ -83,8 +111,6 @@ export type AuthApi<
   ErrorCode,
   Payload,
 > =
-  | AuthGetApi<Route, UrlParams, ErrorCode, Payload>
-  | AuthDeleteApi<Route, UrlParams, ErrorCode, Payload>
   | AuthPostApi<Route, UrlParams, RequestBody, ErrorCode, Payload>
   | AuthPatchApi<Route, UrlParams, RequestBody, ErrorCode, Payload>
   | AuthPutApi<Route, UrlParams, RequestBody, ErrorCode, Payload>
@@ -94,14 +120,19 @@ export type AuthGetApi<
   UrlParams extends UrlRecord<Route>,
   ErrorCode,
   Payload,
-> = Api<"GET", Route, UrlParams, never, AuthResponseJson<ErrorCode, Payload>>
+> = NoneBodyApi<"GET", Route, UrlParams, AuthResponseJson<ErrorCode, Payload>>
 
 export type AuthDeleteApi<
   Route extends string,
   UrlParams extends UrlRecord<Route>,
   ErrorCode,
   Payload,
-> = Api<"DELETE", Route, UrlParams, never, AuthResponseJson<ErrorCode, Payload>>
+> = NoneBodyApi<
+  "DELETE",
+  Route,
+  UrlParams,
+  AuthResponseJson<ErrorCode, Payload>
+>
 
 export type AuthPostApi<
   Route extends string,
