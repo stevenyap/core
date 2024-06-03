@@ -27,3 +27,20 @@ export function failure<E, T>(error: E): RemoteData<E, T> {
 export function success<E, T>(data: T): RemoteData<E, T> {
   return { _t: "Success", data }
 }
+
+export function map<E, T>(
+  fn: (t: T) => T,
+  remoteData: RemoteData<E, T>,
+): RemoteData<E, T> {
+  return remoteData._t === "Success"
+    ? { ...remoteData, data: fn(remoteData.data) }
+    : remoteData
+}
+
+export function getError<E, T>(remoteData: RemoteData<E, T>): E | null {
+  return remoteData._t === "Failure" ? remoteData.error : null
+}
+
+export function getData<E, T>(remoteData: RemoteData<E, T>): T | null {
+  return remoteData._t === "Success" ? remoteData.data : null
+}

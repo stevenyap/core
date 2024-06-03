@@ -35,3 +35,19 @@ export const positiveIntDecoder: JD.Decoder<PositiveInt> = JD.number.transform(
     return throwIfNothing(createPositiveInt(n), `Invalid positive int: ${n}`)
   },
 )
+
+const positiveInt_ = {
+  20: dangerPositiveInt(20),
+}
+
+export function positiveInt(int: keyof typeof positiveInt_): PositiveInt {
+  return positiveInt_[int]
+}
+
+function dangerPositiveInt(int: number): PositiveInt {
+  return {
+    [key]: int,
+    unwrap: () => int,
+    toJSON: () => int,
+  }
+}
