@@ -18,7 +18,6 @@
 - [ ] * No runway promises in lint
 - [ ] Test cases with parallel testing
 - [X] Coaxed out Annotation from decoders
-- [ ] src/data/handler.ts publicApi contract GET should not have BodyParams but it still have because of type Api
 
 ### Web
 - [x] Setup Vite over Parcel

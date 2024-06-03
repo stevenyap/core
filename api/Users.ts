@@ -4,7 +4,7 @@ import { authResponseDecoder, AuthGetApi } from "../data/Api"
 import { numberFromStringDecoder } from "../data/Decoder"
 import { PositiveInt, positiveIntDecoder } from "../data/PositiveInt"
 
-export type GetUsers = AuthGetApi<
+export type Users = AuthGetApi<
   "/users/?limit=:limit&lastID=:lastID",
   UrlParams,
   ErrorCode,
@@ -20,7 +20,7 @@ export type Payload = Array<User>
 
 export type ErrorCode = null
 
-export const contract: GetUsers = {
+export const contract: Users = {
   method: "GET",
   route: "/users/?limit=:limit&lastID=:lastID",
   urlDecoder: JD.object({
