@@ -9,7 +9,7 @@ import {
 import { Password, passwordDecoder } from "../data/user/Password"
 import { Email, emailDecoder } from "../data/user/Email"
 
-export type Login = PostApi<
+export type Contract = PostApi<
   "/login",
   NoUrlParams,
   BodyParams,
@@ -26,7 +26,7 @@ export type Payload = { user: User; token: string }
 
 export type ErrorCode = "USER_NOT_FOUND" | "INVALID_PASSWORD"
 
-export const contract: Login = {
+export const contract: Contract = {
   method: "POST",
   route: "/login",
   urlDecoder: noUrlParamsDecoder,

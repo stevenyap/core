@@ -11,23 +11,26 @@
 - [x] Add opaque type
 
 ### API
+- [ ] GraphQL
+- [ ] DB migration: https://flywaydb.org/ or https://www.liquibase.com - Generates types for Kysely
+- [ ] Test cases with parallel testing
+- [ ] * No runway promises in lint
+- [ ] Refresh token - Access Token and Refresh Token
+- [ ] Add second table StaticPage
 - [x] Local docker setup with database
 - [x] Seeding
 - [x] Kysely
-- [ ] Refresh token - Access Token and Refresh Token
-- [ ] * No runway promises in lint
-- [ ] Test cases with parallel testing
 - [X] Coaxed out Annotation from decoders
 
 ### Web
+- [ ] Data store
+- [ ] No runway promises in lint
+- [ ] Refresh token - Inject into API layer to hold request while refreshing
 - [x] Setup Vite over Parcel
 - [x] Action Updater
 - [x] Cmd as a type by itself to resolve State-State.App => Move to Action.ts
 - [x] Emit everywhere? Emit cannot be execute in Action which is the most place that developer try to do it wrongly
 - [x] A better routing + `UrlToken` => Not a better, just a `simpler` version
-- [ ] No runway promises in lint
-- [ ] Data store
-- [ ] Refresh token - Inject into API layer to hold request while refreshing
  
 ### Non-Goals
 - [ ] Immutable state 
@@ -43,3 +46,4 @@ We need to document all our convention
 - [ ] Prefer `function` over `const a = () => {}`
 - [ ] Always annotate types in function and variables
 - [ ] Immutable and Functional
+- [ ] API follow group context base on Restful

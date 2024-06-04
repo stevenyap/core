@@ -13,12 +13,7 @@ export function createPositiveInt(n: number): Maybe<PositiveInt> {
 export function createPositiveIntE(
   n: number,
 ): Either<ErrorPositiveInt, PositiveInt> {
-  const validated = cleanPositiveInt(n)
-  return mapEither(validated, (int) => ({
-    [key]: int,
-    unwrap: () => int,
-    toJSON: () => int,
-  }))
+  return mapEither(cleanPositiveInt(n), createPositiveInt_)
 }
 
 export type ErrorPositiveInt = "NOT_AN_INT" | "NOT_A_POSITIVE_INT"
@@ -37,14 +32,14 @@ export const positiveIntDecoder: JD.Decoder<PositiveInt> = JD.number.transform(
 )
 
 const positiveInt_ = {
-  20: dangerPositiveInt(20),
+  20: createPositiveInt_(20),
 }
 
 export function positiveInt(int: keyof typeof positiveInt_): PositiveInt {
   return positiveInt_[int]
 }
 
-function dangerPositiveInt(int: number): PositiveInt {
+function createPositiveInt_(int: number): PositiveInt {
   return {
     [key]: int,
     unwrap: () => int,

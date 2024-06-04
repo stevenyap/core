@@ -1,10 +1,10 @@
 import * as JD from "decoders"
-import { User, userDecoder } from "../app/User"
-import { authResponseDecoder, AuthGetApi } from "../data/Api"
-import { numberFromStringDecoder } from "../data/Decoder"
-import { PositiveInt, positiveIntDecoder } from "../data/PositiveInt"
+import { User, userDecoder } from "../../app/User"
+import { authResponseDecoder, AuthGetApi } from "../../data/Api"
+import { numberFromStringDecoder } from "../../data/Decoder"
+import { PositiveInt, positiveIntDecoder } from "../../data/PositiveInt"
 
-export type Users = AuthGetApi<
+export type Contract = AuthGetApi<
   "/users/?limit=:limit&lastID=:lastID",
   UrlParams,
   ErrorCode,
@@ -20,7 +20,7 @@ export type Payload = Array<User>
 
 export type ErrorCode = null
 
-export const contract: Users = {
+export const contract: Contract = {
   method: "GET",
   route: "/users/?limit=:limit&lastID=:lastID",
   urlDecoder: JD.object({
