@@ -47,3 +47,4 @@ We need to document all our convention
 - [ ] Always annotate types in function and variables
 - [ ] Immutable and Functional
 - [ ] API follow group context base on Restful
+- [ ] Files and Folder always use upper case
