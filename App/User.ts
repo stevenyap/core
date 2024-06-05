@@ -1,7 +1,7 @@
 import * as JD from "decoders"
-import { Email, emailDecoder } from "../data/user/Email"
-import { PositiveInt, positiveIntDecoder } from "../data/PositiveInt"
-import { Text100, text100Decoder } from "../data/Text/Text100"
+import { Email, emailDecoder } from "../Data/User/Email"
+import { PositiveInt, positiveIntDecoder } from "../Data/PositiveInt"
+import { Text100, text100Decoder } from "../Data/Text/Text100"
 
 export type User = {
   id: PositiveInt

@@ -1,13 +1,13 @@
 import * as JD from "decoders"
-import { User, userDecoder } from "../app/User"
+import { User, userDecoder } from "../App/User"
 import {
   NoUrlParams,
   noUrlParamsDecoder,
   PostApi,
   responseDecoder,
-} from "../data/Api"
-import { Password, passwordDecoder } from "../data/user/Password"
-import { Email, emailDecoder } from "../data/user/Email"
+} from "../Data/Api"
+import { Password, passwordDecoder } from "../Data/User/Password"
+import { Email, emailDecoder } from "../Data/User/Email"
 
 export type Contract = PostApi<
   "/login",
