@@ -1,5 +1,6 @@
 import * as JD from "decoders"
 import { Tokens } from "./UrlToken"
+import { Readable } from "stream"
 
 // Base type to describe an API endpoint
 type Api<
@@ -25,6 +26,19 @@ type NoneBodyApi<
   method: M
   route: Route
   urlDecoder: JD.Decoder<UrlParams>
+  responseDecoder: (status: number) => JD.Decoder<Response>
+}
+
+type StreamApi<
+  Route extends string,
+  UrlParams extends UrlRecord<Route>,
+  RequestBody,
+  Response,
+> = {
+  route: Route
+  readableStream: Readable
+  urlDecoder: JD.Decoder<UrlParams>
+  bodyDecoder: JD.Decoder<RequestBody>
   responseDecoder: (status: number) => JD.Decoder<Response>
 }
 
@@ -181,27 +195,132 @@ export type AuthPatchApi<
 export type AuthStreamApi<
   Route extends string,
   UrlParams extends UrlRecord<Route>,
+  RequestBody,
   ErrorCode,
   Payload,
-> = Api<"GET", Route, UrlParams, never, AuthResponseJson<ErrorCode, Payload>>
+> = StreamApi<
+  Route,
+  UrlParams,
+  RequestBody,
+  AuthResponseJson<ErrorCode, Payload>
+>
+
+// Admin APIs requires a request header "authorization: Bearer <JWT-Token>"
+// and returns AdminResponseJson
+export type AdminNoneBodyApi<
+  Route extends string,
+  UrlParams extends UrlRecord<Route>,
+  ErrorCode,
+  Payload,
+> =
+  | AdminGetApi<Route, UrlParams, ErrorCode, Payload>
+  | AdminDeleteApi<Route, UrlParams, ErrorCode, Payload>
+
+export type AdminApi<
+  Route extends string,
+  UrlParams extends UrlRecord<Route>,
+  RequestBody,
+  ErrorCode,
+  Payload,
+> =
+  | AdminPostApi<Route, UrlParams, RequestBody, ErrorCode, Payload>
+  | AdminPatchApi<Route, UrlParams, RequestBody, ErrorCode, Payload>
+  | AdminPutApi<Route, UrlParams, RequestBody, ErrorCode, Payload>
+
+export type AdminGetApi<
+  Route extends string,
+  UrlParams extends UrlRecord<Route>,
+  ErrorCode,
+  Payload,
+> = NoneBodyApi<"GET", Route, UrlParams, AdminResponseJson<ErrorCode, Payload>>
+
+export type AdminDeleteApi<
+  Route extends string,
+  UrlParams extends UrlRecord<Route>,
+  ErrorCode,
+  Payload,
+> = NoneBodyApi<
+  "DELETE",
+  Route,
+  UrlParams,
+  AdminResponseJson<ErrorCode, Payload>
+>
+
+export type AdminPostApi<
+  Route extends string,
+  UrlParams extends UrlRecord<Route>,
+  RequestBody,
+  ErrorCode,
+  Payload,
+> = Api<
+  "POST",
+  Route,
+  UrlParams,
+  RequestBody,
+  AdminResponseJson<ErrorCode, Payload>
+>
+
+export type AdminPutApi<
+  Route extends string,
+  UrlParams extends UrlRecord<Route>,
+  RequestBody,
+  ErrorCode,
+  Payload,
+> = Api<
+  "PUT",
+  Route,
+  UrlParams,
+  RequestBody,
+  AdminResponseJson<ErrorCode, Payload>
+>
+
+export type AdminPatchApi<
+  Route extends string,
+  UrlParams extends UrlRecord<Route>,
+  RequestBody,
+  ErrorCode,
+  Payload,
+> = Api<
+  "PATCH",
+  Route,
+  UrlParams,
+  RequestBody,
+  AdminResponseJson<ErrorCode, Payload>
+>
+
+// Stream APIs do not decode
+// Admin Stream APIs requires a request header "authorization: Bearer <JWT-Token>"
+export type AdminStreamApi<
+  Route extends string,
+  UrlParams extends UrlRecord<Route>,
+  RequestBody,
+  ErrorCode,
+  Payload,
+> = StreamApi<
+  Route,
+  UrlParams,
+  RequestBody,
+  AdminResponseJson<ErrorCode, Payload>
+>
 
 export type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH"
 // Url only provides string-based values (even for number)
 // hence, we treat it as unknown so that we can decode it into other types
 export type UrlRecord<R extends string> = Record<Tokens<R>, unknown>
 
+export type ApiError = "PAYLOAD_TOO_LARGE"
 export type Ok200<D> = { _t: "Ok"; data: D }
-export type Err400<E> = { _t: "Err"; code: E }
+export type Err400<E> = { _t: "Err"; code: E | ApiError }
 export type InternalErr500 = { _t: "ServerError"; errorID: string }
 export type ResponseJson<E, D> = Ok200<D> | Err400<E> | InternalErr500
 
 export type AuthErr400<E> = {
   _t: "Err"
-  code: E | "UNAUTHORISED"
+  code: E | ApiError | "UNAUTHORISED"
 }
 export type AuthResponseJson<E, D> = Ok200<D> | AuthErr400<E> | InternalErr500
 
-export type AdminErr400<E> = { _t: "Err"; code: E | "UNAUTHORISED" }
+export type AdminErr400<E> = { _t: "Err"; code: E | ApiError | "UNAUTHORISED" }
 export type AdminResponseJson<E, D> = Ok200<D> | AdminErr400<E> | InternalErr500
 
 export function responseDecoder<E, T>(
@@ -217,7 +336,7 @@ export function responseDecoder<E, T>(
       case 500:
         return internalErr500Decoder()
       default:
-        throw new Error("Invalid status number: `${status}`")
+        throw new Error(`Invalid status number: ${status}`)
     }
   }
 }
@@ -235,7 +354,25 @@ export function authResponseDecoder<E, T>(
       case 500:
         return internalErr500Decoder()
       default:
-        throw new Error("Invalid status number: `${status}`")
+        throw new Error(`Invalid status number: ${status}`)
+    }
+  }
+}
+
+export function adminResponseDecoder<E, T>(
+  errorDecoder: JD.Decoder<E>,
+  dataDecoder: JD.Decoder<T>,
+) {
+  return function (status: number): JD.Decoder<AdminResponseJson<E, T>> {
+    switch (status) {
+      case 200:
+        return ok200Decoder(dataDecoder)
+      case 400:
+        return adminErr400Decoder(errorDecoder)
+      case 500:
+        return internalErr500Decoder()
+      default:
+        throw new Error(`Invalid status number: ${status}`)
     }
   }
 }
@@ -255,7 +392,10 @@ export function err400Decoder<E>(
   return JD.object({
     _t: JD.constant("Err"),
     code: JD.unknown, // Issue here https://github.com/nvie/decoders/issues/930
-  }).transform(({ _t, code }) => ({ _t, code: errorDecoder.verify(code) }))
+  }).transform(({ _t, code }) => ({
+    _t,
+    code: JD.either(apiErrorDecoder, errorDecoder).verify(code),
+  }))
 }
 
 export function authErr400Decoder<E>(
@@ -266,7 +406,11 @@ export function authErr400Decoder<E>(
     code: JD.unknown, // Issue here https://github.com/nvie/decoders/issues/930
   }).transform(({ _t, code }) => ({
     _t,
-    code: JD.either(JD.constant("UNAUTHORISED"), errorDecoder).verify(code),
+    code: JD.either(
+      JD.constant("UNAUTHORISED"),
+      apiErrorDecoder,
+      errorDecoder,
+    ).verify(code),
   }))
 }
 
@@ -278,9 +422,17 @@ export function adminErr400Decoder<E>(
     code: JD.unknown, // Issue here https://github.com/nvie/decoders/issues/930
   }).transform(({ _t, code }) => ({
     _t,
-    code: JD.either(JD.constant("UNAUTHORISED"), errorDecoder).verify(code),
+    code: JD.either(
+      JD.constant("UNAUTHORISED"),
+      apiErrorDecoder,
+      errorDecoder,
+    ).verify(code),
   }))
 }
+
+export const apiErrorDecoder: JD.Decoder<ApiError> = JD.oneOf([
+  "PAYLOAD_TOO_LARGE",
+])
 
 export function internalErr500Decoder(): JD.Decoder<InternalErr500> {
   return JD.object({

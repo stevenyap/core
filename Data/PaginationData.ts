@@ -1,4 +1,4 @@
-import { PositiveInt } from "./PositiveInt"
+import { PositiveInt } from "./Number/PositiveInt"
 
 export type PaginationData<E, T> =
   | NotAsked

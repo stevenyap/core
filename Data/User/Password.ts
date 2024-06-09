@@ -1,32 +1,20 @@
 import * as JD from "decoders"
-import { Opaque } from "../Opaque"
+import { Opaque, jsonValueCreate } from "../Opaque"
 import { Either, left, right, fromRight, mapEither } from "../Either"
 import { Maybe, throwIfNothing } from "../Maybe"
 
 const key: unique symbol = Symbol()
+/** Note: Adjust the logic to fit your project requirements */
 export type Password = Opaque<string, typeof key>
+export type ErrorPassword = "INVALID_PASSWORD"
 
-export function createPassword(value: string): Maybe<Password> {
-  return fromRight(createPasswordE(value))
+export function createPassword(s: string): Maybe<Password> {
+  return fromRight(createPasswordE(s))
 }
 
-export function createPasswordE(value: string): Either<Error, Password> {
-  const validated = cleanPassword(value)
-  return mapEither(validated, (password) => ({
-    [key]: password,
-    unwrap: function () {
-      return this[key]
-    },
-    toJSON: function () {
-      return this[key]
-    },
-  }))
-}
-
-export type Error = "INVALID_PASSWORD"
-export function cleanPassword(value: string): Either<Error, string> {
-  const v = value.toLowerCase()
-  return v.length >= 6 ? right(v) : left("INVALID_PASSWORD")
+export function createPasswordE(s: string): Either<ErrorPassword, Password> {
+  const validated = _validate(s)
+  return mapEither(validated, jsonValueCreate(key))
 }
 
 export const passwordDecoder: JD.Decoder<Password> = JD.string.transform(
@@ -34,3 +22,9 @@ export const passwordDecoder: JD.Decoder<Password> = JD.string.transform(
     return throwIfNothing(createPassword(s), `Invalid password: ${s}`)
   },
 )
+
+function _validate(s: string): Either<ErrorPassword, string> {
+  // Note: Adjust this to your project requirements
+  const v = s.toLowerCase()
+  return v.length >= 6 ? right(v) : left("INVALID_PASSWORD")
+}

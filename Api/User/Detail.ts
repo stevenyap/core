@@ -1,8 +1,6 @@
 import * as JD from "decoders"
-import { User, userDecoder } from "../../App/User"
+import { User, UserID, userDecoder, userIDDecoder } from "../../App/User"
 import { authResponseDecoder, AuthGetApi } from "../../Data/Api"
-import { numberFromStringDecoder } from "../../Data/Decoder"
-import { PositiveInt, positiveIntDecoder } from "../../Data/PositiveInt"
 
 export type Contract = AuthGetApi<
   "/users/:userID",
@@ -12,7 +10,7 @@ export type Contract = AuthGetApi<
 >
 
 export type UrlParams = {
-  userID: PositiveInt
+  userID: UserID
 }
 
 export type Payload = User
@@ -22,9 +20,7 @@ export type ErrorCode = "USER_NOT_FOUND"
 export const contract: Contract = {
   method: "GET",
   route: "/users/:userID",
-  urlDecoder: JD.object({
-    userID: numberFromStringDecoder.transform(positiveIntDecoder.verify),
-  }),
+  urlDecoder: JD.object({ userID: userIDDecoder }),
   responseDecoder: authResponseDecoder(
     JD.oneOf(["USER_NOT_FOUND"]),
     userDecoder,

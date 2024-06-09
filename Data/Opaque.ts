@@ -81,3 +81,19 @@ export function find<T, K extends symbol>(
 
   return first.unwrap() === s ? first : find(s, rest)
 }
+
+export function jsonValueCreate<T extends JSONValue, K extends symbol>(
+  key: K,
+): (v: T) => Opaque<T, K> {
+  return (value: T) => {
+    return {
+      [key]: value,
+      unwrap: function () {
+        return this[key]
+      },
+      toJSON: function () {
+        return this[key]
+      },
+    }
+  }
+}
