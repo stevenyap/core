@@ -32,13 +32,11 @@ type NoneBodyApi<
 type StreamApi<
   Route extends string,
   UrlParams extends UrlRecord<Route>,
-  RequestBody,
   Response,
 > = {
   route: Route
   readableStream: Readable
   urlDecoder: JD.Decoder<UrlParams>
-  bodyDecoder: JD.Decoder<RequestBody>
   responseDecoder: (status: number) => JD.Decoder<Response>
 }
 
@@ -195,15 +193,9 @@ export type AuthPatchApi<
 export type AuthStreamApi<
   Route extends string,
   UrlParams extends UrlRecord<Route>,
-  RequestBody,
   ErrorCode,
   Payload,
-> = StreamApi<
-  Route,
-  UrlParams,
-  RequestBody,
-  AuthResponseJson<ErrorCode, Payload>
->
+> = StreamApi<Route, UrlParams, AuthResponseJson<ErrorCode, Payload>>
 
 // Admin APIs requires a request header "authorization: Bearer <JWT-Token>"
 // and returns AdminResponseJson
@@ -293,15 +285,9 @@ export type AdminPatchApi<
 export type AdminStreamApi<
   Route extends string,
   UrlParams extends UrlRecord<Route>,
-  RequestBody,
   ErrorCode,
   Payload,
-> = StreamApi<
-  Route,
-  UrlParams,
-  RequestBody,
-  AdminResponseJson<ErrorCode, Payload>
->
+> = StreamApi<Route, UrlParams, AdminResponseJson<ErrorCode, Payload>>
 
 export type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH"
 // Url only provides string-based values (even for number)
